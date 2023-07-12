@@ -1,0 +1,12 @@
+{
+  "preset": "react-native",
+  "setupFiles": ["<rootDir>/jest.setup.js"],
+  "setupFilesAfterEnv": ["@testing-library/jest-native/extend-expect"],
+  "moduleFileExtensions": ["js", "jsx", "ts", "tsx"],
+  "transform": {
+    "^.+\\.tsx?$": ["ts-jest", {}]
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!@?(jest-)?react-native|react-clone-referenced-element|@react-native-community|@testing-library|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|sentry-expo|native-base)"
+  ]
+}

@@ -1,0 +1,9 @@
+const SERVICE_IDS: string[] = [];
+const CONNECT_TIMEOUT_MS = 5000;
+const SCAN_DURATION_SECONDS = 5;
+
+export default {
+  SERVICE_IDS,
+  CONNECT_TIMEOUT_MS,
+  SCAN_DURATION_SECONDS,
+};

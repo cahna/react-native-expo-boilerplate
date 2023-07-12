@@ -1,0 +1,7 @@
+node_modules
+.expo
+expo-env.d.ts
+build
+coverage
+android
+profile

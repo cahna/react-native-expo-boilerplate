@@ -1,0 +1,15 @@
+{
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "singleQuote": true,
+  "importOrder": [
+    "^@changeme/polyfills/init$",
+    "^react$",
+    "<THIRD_PARTY_MODULES>",
+    "^@changeme",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrderParserPlugins": ["typescript", "decorators-legacy", "jsx"]
+}
