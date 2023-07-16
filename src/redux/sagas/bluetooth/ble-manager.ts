@@ -1,4 +1,10 @@
-import { Platform } from 'react-native';
+import { zipObject } from 'lodash-es';
+import {
+  Permission,
+  PermissionStatus,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 import BleManager, { Peripheral } from 'react-native-ble-manager';
 import {
   all,
@@ -11,23 +17,71 @@ import {
 } from 'redux-saga/effects';
 
 import BLE from '@changeme/constants/BLE';
+import { rootLogger } from '@changeme/logger';
 
-import { rootLogger } from '../../../logger';
 import { actions as btStateAction } from '../../features/bluetooth';
 import { appSelect } from '../effects';
 import * as btAction from './actions';
 
 const log = rootLogger?.extend('sagas/bluetooth/ble-manager');
 
+const androidPermissionsNeeded = [
+  PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+  PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE,
+  PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+  PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+];
+
+function* requestBluetoothPermissionsSaga() {
+  if (Platform.OS === 'android' && Platform.Version >= 23) {
+    const grantedResponse: Record<Permission, PermissionStatus> = yield call(
+      PermissionsAndroid.requestMultiple,
+      androidPermissionsNeeded,
+    );
+    log?.debug(
+      `permissions grantedResponse: ${JSON.stringify(grantedResponse)}`,
+    );
+    const locationPermissionStatus =
+      grantedResponse[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
+    const granted =
+      locationPermissionStatus === PermissionsAndroid.RESULTS.GRANTED;
+    yield put(btStateAction.setHasBluetoothPermissions(granted));
+  }
+}
+
+function* refreshBluetoothPermissionsSaga() {
+  if (Platform.OS === 'android' && Platform.Version >= 23) {
+    const permissionsResponses: boolean[] = yield all(
+      androidPermissionsNeeded.map((permission) =>
+        call(PermissionsAndroid.check, permission),
+      ),
+    );
+    const grantedResponse = zipObject(
+      androidPermissionsNeeded,
+      permissionsResponses,
+    );
+    const hasBluetoothPermissions =
+      grantedResponse[PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
+    yield put(
+      btStateAction.setHasBluetoothPermissions(hasBluetoothPermissions),
+    );
+
+    if (!hasBluetoothPermissions) {
+      yield call(requestBluetoothPermissionsSaga);
+    }
+  }
+}
+
 function* enableBluetoothSaga() {
   log?.debug(`BleManager.enableBluetooth()`);
   try {
     yield call(BleManager.enableBluetooth);
+    yield put(btStateAction.setIsBluetoothEnabled(true));
   } catch (error) {
     log?.warn('Error enabling bluetooth', error);
     yield put(btStateAction.setIsBluetoothEnabled(false));
   }
-  yield put(btStateAction.setIsBluetoothEnabled(true));
 }
 
 function* disableBluetoothSaga() {
@@ -85,17 +139,21 @@ function* startScanSaga() {
     btState.isBluetoothEnabled &&
     btState.initialized
   ) {
-    yield all([
-      put(btStateAction.setIsScanning(true)),
-      put(btStateAction.clearDiscoveredPeripherals()),
-    ]);
+    yield put(btStateAction.startNewScan());
     try {
-      yield call(
-        BleManager.scan,
-        BLE.SERVICE_IDS,
-        BLE.SCAN_DURATION_SECONDS,
-        false,
-      );
+      const { timeout } = yield race({
+        scan: call(
+          BleManager.scan,
+          BLE.SERVICE_IDS,
+          BLE.SCAN_DURATION_SECONDS,
+          false,
+        ),
+        timeout: delay(BLE.CONNECT_TIMEOUT_MS + 1000),
+      });
+      if (timeout) {
+        log?.debug(`bluetooth timed out`);
+        yield put(btStateAction.setIsScanning(false));
+      }
     } catch (error) {
       log?.error(`error scanning for bluetooth devices:`, error);
       yield put(btStateAction.setIsScanning(false));
@@ -277,8 +335,9 @@ function* notifyScanStoppedSaga() {
 }
 
 function* initBluetoothManagerSaga() {
-  yield enableBluetoothSaga();
-  yield startBluetoothManagerSaga();
+  yield call(refreshBluetoothPermissionsSaga);
+  yield call(enableBluetoothSaga);
+  yield call(startBluetoothManagerSaga);
 }
 
 function* shutdownBluetoothManagerSaga() {

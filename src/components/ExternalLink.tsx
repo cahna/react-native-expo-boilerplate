@@ -1,7 +1,6 @@
-import type { ComponentProps, FC } from 'react';
-
 import { Link } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
+import type { ComponentProps, FC } from 'react';
 import { Platform } from 'react-native';
 
 export const ExternalLink: FC<ComponentProps<typeof Link>> = ({

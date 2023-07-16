@@ -1,7 +1,6 @@
-import * as React from 'react';
-
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
+import * as React from 'react';
 import { Pressable, useColorScheme } from 'react-native';
 
 import Colors from '@changeme/constants/Colors';
@@ -57,9 +56,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="bluetooth"
         options={{
-          title: 'Tab Two',
+          title: 'Bluetooth',
+          tabBarIcon,
+          headerRight: headerRight1,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
           tabBarIcon,
         }}
       />

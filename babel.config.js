@@ -9,5 +9,10 @@ module.exports = function (api) {
       'babel-plugin-transform-typescript-metadata',
       '@babel/plugin-proposal-export-namespace-from',
     ],
+    env: {
+      production: {
+        plugins: ['react-native-paper/babel'],
+      },
+    },
   };
 };

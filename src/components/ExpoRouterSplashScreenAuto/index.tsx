@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
-
 import { SplashScreen } from 'expo-router';
+import { useEffect } from 'react';
 
 import { rootLogger } from '@changeme/logger';
 

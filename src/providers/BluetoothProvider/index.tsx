@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import {
   BleEventType,

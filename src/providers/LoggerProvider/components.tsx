@@ -1,6 +1,5 @@
-import * as React from 'react';
-
 import { isUndefined } from 'lodash-es';
+import * as React from 'react';
 
 import { rootLogger } from '@changeme/logger';
 import { actions } from '@changeme/redux/features/app-settings';

@@ -59,6 +59,10 @@ export default createSlice({
       state.discoveredPeripherals = {};
       state.connectingToPeripheral = null;
     },
+    startNewScan: (state) => {
+      state.isScanning = true;
+      state.discoveredPeripherals = {};
+    },
     setIsConnecting: (
       state,
       action: PayloadAction<boolean | PeripheralInfo>,

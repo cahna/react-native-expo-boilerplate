@@ -47,3 +47,45 @@ export function View(props: ViewProps) {
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
+
+export function Container(props: ViewProps) {
+  const { style, ...otherProps } = props;
+
+  return (
+    <DefaultView
+      style={[
+        {
+          width: '100%',
+          padding: 16,
+        },
+        style,
+      ]}
+      {...otherProps}
+    />
+  );
+}
+
+export function Row(props: ViewProps) {
+  const { style, ...otherProps } = props;
+
+  return (
+    <DefaultView
+      style={[
+        {
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        },
+        style,
+      ]}
+      {...otherProps}
+    />
+  );
+}
+
+export function Column(props: ViewProps) {
+  const { style, ...otherProps } = props;
+
+  return <DefaultView style={[{}, style]} {...otherProps} />;
+}
+export const Col = Column;

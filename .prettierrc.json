@@ -4,7 +4,6 @@
   "singleQuote": true,
   "importOrder": [
     "^@changeme/polyfills/init$",
-    "^react$",
     "<THIRD_PARTY_MODULES>",
     "^@changeme",
     "^[./]"
