@@ -60,7 +60,13 @@ export default function TabLayout() {
         options={{
           title: 'Bluetooth',
           tabBarIcon,
-          headerRight: headerRight1,
+        }}
+      />
+      <Tabs.Screen
+        name="users"
+        options={{
+          title: 'Users',
+          tabBarIcon,
         }}
       />
       <Tabs.Screen

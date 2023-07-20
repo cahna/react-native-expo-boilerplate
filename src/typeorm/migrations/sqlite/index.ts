@@ -1,0 +1,3 @@
+import { M2023062301InitDb1687542963850 } from './1687542963850-M20230623_01_InitDb';
+
+export const getMigrations = () => [M2023062301InitDb1687542963850];

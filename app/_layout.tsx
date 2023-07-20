@@ -8,8 +8,10 @@ import { Portal } from 'react-native-paper';
 
 import { ExpoRouterSplashScreenAuto } from '@changeme/components/ExpoRouterSplashScreenAuto';
 import { BluetoothProvider } from '@changeme/providers/BluetoothProvider';
+import { DynamicIntlProvider } from '@changeme/providers/DynamicIntlProvider';
 import { PaperProvider } from '@changeme/providers/PaperProvider';
 import { ReduxProvider } from '@changeme/providers/ReduxProvider';
+import { TypeORMProvider } from '@changeme/providers/TypeORM';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -50,21 +52,19 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
   if (!loaded) {
     return null;
   }
 
   return (
-    <ReduxProvider fallback={ExpoRouterSplashScreenAuto}>
-      <BluetoothProvider>
-        <RootLayoutNav />
-      </BluetoothProvider>
+    <ReduxProvider>
+      <DynamicIntlProvider>
+        <BluetoothProvider>
+          <TypeORMProvider fallback={ExpoRouterSplashScreenAuto}>
+            <RootLayoutNav />
+          </TypeORMProvider>
+        </BluetoothProvider>
+      </DynamicIntlProvider>
     </ReduxProvider>
   );
 }
